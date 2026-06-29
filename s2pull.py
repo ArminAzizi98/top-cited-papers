@@ -11,7 +11,7 @@ Examples:
   python s2pull.py --venue NeurIPS ICML ICLR --min-cites 20 --sort influential
   python s2pull.py --topic "steering vector" --abstract --max 30
 """
-import argparse, csv, time, sys
+import argparse, csv, time, sys, re, hashlib
 from datetime import date, datetime
 
 URL = "https://api.semanticscholar.org/graph/v1/paper/search/bulk"
@@ -41,6 +41,42 @@ def build_query(topics, must=None):
         for t in must:
             q += f" + {_quote(t)}"
     return q
+
+
+def _slug(s):
+    return re.sub(r"[^a-z0-9]+", "-", str(s).lower()).strip("-")
+
+
+def default_outname(args, date_params):
+    # encode only the args that change which papers come back or how they rank.
+    # max/pool/out/api-key are deliberately excluded.
+    parts = ["papers"]
+    if args.topic == DEFAULT_TOPICS:
+        parts.append("default")
+    else:
+        ts = "+".join(_slug(t) for t in args.topic[:3])
+        if len(args.topic) > 3:
+            ts += f"+{len(args.topic) - 3}more"
+        parts.append(ts)
+    parts.append(_slug(date_params.get("year") or date_params["publicationDateOrYear"]))
+    if args.sort == "influential":
+        parts.append("infl")
+    if args.normalized != "none":
+        parts.append(f"per-{args.normalized}")
+    if args.venue:
+        parts.append("venue-" + "+".join(_slug(v) for v in args.venue[:3]))
+    if args.min_cites is not None:
+        parts.append(f"minc{args.min_cites}")
+    if args.exact_match:
+        parts.append("em-" + "+".join(_slug(t) for t in args.exact_match[:3]))
+
+    stem = "_".join(p for p in parts if p)
+    # short config hash so distinct runs never collide, even if the visible
+    # parts truncate to the same string
+    h = hashlib.md5(stem.encode()).hexdigest()[:6]
+    if len(stem) > 100:
+        stem = stem[:100].rstrip("-_+")
+    return f"{stem}_{h}.csv"
 
 
 def get_with_retry(requests, url, params, headers, tries=6):
@@ -131,8 +167,7 @@ def main():
         pool = max(1000, args.max)
         if args.normalized != "none":
             pool = max(3000, args.max * 20)
-    tag = (args.start or "2026").replace("/", "-")
-    out = args.out or f"top_{tag}_{args.normalized}.csv"
+    out = args.out or default_outname(args, date_params)
     headers = {"x-api-key": args.api_key} if args.api_key else {}
 
     # request abstract when shown OR when filtering on it. NOTE: the bulk endpoint
