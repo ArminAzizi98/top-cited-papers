@@ -59,10 +59,10 @@ Fastest-climbing papers since May 2025, ranked by influential citations per week
 python3 s2pull.py --start 05/2025 --normalized week --sort influential
 ```
 
-Papers about steering that also evaluate on MT-Bench:
+Papers about steering that also discuss LVLM:
 
 ```bash
-python3 s2pull.py --exact-match "MT-bench" "steering"
+python3 s2pull.py --exact-match "MT-bench" "LVLM"
 ```
 
 Top NeurIPS and ICML efficiency papers with at least 20 citations:
