@@ -21,7 +21,7 @@ API key raises the rate limit; pass it with `--api-key`.
 ## Quick start
 
 ```bash
-python3 s2pull.py --topic "language model" "diffusion model"
+python s2pull.py --topic "language model" "diffusion model"
 ```
 
 This writes a CSV to the current folder, with the highest-cited matching papers
@@ -52,25 +52,25 @@ Pass `--out NAME.csv` if you want to set the name yourself.
 Most-cited LLM and VLM papers of 2026:
 
 ```bash
-python3 s2pull.py --topic "large language model" "vision language model" --max 50
+python s2pull.py --topic "large language model" "vision language model" --max 50
 ```
 
 Fastest-climbing papers since May 2025, ranked by influential citations per week:
 
 ```bash
-python3 s2pull.py --start 05/2025 --normalized week --sort influential
+python s2pull.py --start 05/2025 --normalized week --sort influential
 ```
 
 Papers about steering that also LVLMs:
 
 ```bash
-python3 s2pull.py --exact-match "MT-bench" "LVLM"
+python s2pull.py --exact-match "MT-bench" "LVLM"
 ```
 
 Top NeurIPS and ICML efficiency papers with at least 20 citations:
 
 ```bash
-python3 s2pull.py --topic "efficient inference" "quantization" "speculative decoding" \
+python s2pull.py --topic "efficient inference" "quantization" "speculative decoding" \
   --venue NeurIPS ICML --min-cites 20
 ```
 
