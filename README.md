@@ -24,8 +24,10 @@ API key raises the rate limit; pass it with `--api-key`.
 python3 s2pull.py --topic "language model" "diffusion model"
 ```
 
-This writes a CSV (for example `top_2026_none.csv`) to the current folder, with
-the highest-cited matching papers first.
+This writes a CSV to the current folder, with the highest-cited matching papers
+first. The filename is generated from the arguments you used (for example
+`papers_default_2026_05a38a.csv`), so different runs do not overwrite each other.
+Pass `--out NAME.csv` if you want to set the name yourself.
 
 ## Options
 
@@ -42,7 +44,7 @@ the highest-cited matching papers first.
 | `--abstract` | Add an abstract column to the output. |
 | `--max N` | Number of rows in the output (default 100). |
 | `--pool N` | How many papers to pull before ranking. Auto-bumps when normalizing. |
-| `--out FILE` | Output filename. |
+| `--out FILE` | Output filename. Defaults to a name built from the run's arguments, with a short hash so runs never collide. |
 | `--api-key KEY` | Optional Semantic Scholar API key for higher rate limits. |
 
 ## Examples
@@ -59,7 +61,7 @@ Fastest-climbing papers since May 2025, ranked by influential citations per week
 python3 s2pull.py --start 05/2025 --normalized week --sort influential
 ```
 
-Papers about steering that also discuss LVLM:
+Papers about steering that also LVLMs:
 
 ```bash
 python3 s2pull.py --exact-match "MT-bench" "LVLM"
